@@ -1,0 +1,180 @@
+/* Layout: full width and sticky footer */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  padding-top: 4.5rem; /* Match navbar height for fixed-top */
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f7f7;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer.airbnb-footer {
+  flex-shrink: 0;
+}
+
+/* Navbar adjustments */
+.navbar {
+  height: 4.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #ff385c !important;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ff385c;
+}
+
+
+
+/* footer */
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.airbnb-footer {
+  padding: 1rem 2rem;
+  font-size: 0.9rem;
+  background-color: #f7f7f7;
+  color: #222;
+  border-top: 1px solid #e0e0e0;
+}
+
+.airbnb-footer a {
+  text-decoration: none;
+  color: #222;
+}
+
+.airbnb-footer a:hover {
+  text-decoration: underline;
+}
+
+.footer-left span,
+.footer-left a {
+  margin-right: 0.5rem;
+}
+
+.footer-right i {
+  font-size: 1.2rem;
+  color: #222;
+}
+
+.footer-right i:hover {
+  color: #555;
+}
+
+/* Prevent pointer events for non-clickable footer text */
+.no-link {
+  pointer-events: none;
+  cursor: default;
+}
+
+
+
+
+/* all Listing Cards  -> index.js */
+.listing-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.listing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.listing-image-link {
+  position: relative;
+  display: block;
+  height: 200px;
+  overflow: hidden;
+}
+
+.listing-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.listing-image-link:hover .listing-image {
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+  transition: background 0.3s ease;
+}
+
+.listing-image-link:hover .image-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+}
+
+.price {
+  font-size: 1.1rem;
+  color: #2a2a2a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .listing-image-link {
+    height: 180px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .listing-image-link {
+    height: 220px;
+  }
+}
+
+/*show ejs */
+.fixed-image {
+  height: 300px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 16px 16px 0 0;
+}
+
+.listing-section {
+  border: 1px solid #e2e2e2; /* light border to visually separate */
+  border-radius: 16px;
+  background-color: #fdfdfd;
+}

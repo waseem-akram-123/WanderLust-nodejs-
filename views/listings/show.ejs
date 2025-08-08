@@ -1,0 +1,108 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <div
+    class="listing-section border border-light-subtle rounded-4 overflow-hidden"
+    style="max-width: 600px; margin: auto; background-color: #fdfdfd"
+  >
+    <!-- Top Image -->
+    <img
+      src="<%= listing.image?.url || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80' %>"
+      alt="<%= listing.title %>"
+      class="fixed-image"
+      style="width: 100%; height: 300px; object-fit: cover"
+    />
+
+    <!-- Listing Content -->
+    <div class="p-4">
+      <h2 class="mb-3 fw-semibold"><%= listing.title %></h2>
+      <h5 class="mb-3 fw-semibold"><%= listing.location %></h5>
+      <p class="text-muted mb-2"><%= listing.country %></p>
+      <p class="mb-3"><%= listing.description %></p>
+
+      <h4 class="text-success mb-4">
+        &#8377; <%= Number(listing.price).toLocaleString("en-IN") %>
+      </h4>
+
+      <p class="text-muted">
+        Listed by: <strong><%= listing.author?.username || "Unknown" %></strong>
+      </p>
+
+      <% if (currentUser && currentUser._id.toString() ===
+      listing.author?._id.toString()) { %>
+      <div class="d-flex gap-3">
+        <a href="/listings/<%= listing._id %>/edit" class="btn btn-primary">
+          <i class="bi bi-pencil-square me-2"></i>Edit Listing
+        </a>
+        <form
+          method="POST"
+          action="/listings/<%= listing._id %>?_method=DELETE"
+          onsubmit="return confirm('Are you sure you want to delete this listing?');"
+        >
+          <button type="submit" class="btn btn-outline-danger">
+            <i class="bi bi-trash3 me-2"></i>Delete Listing
+          </button>
+        </form>
+      </div>
+      <% } %>
+
+      <!-- Review Form -->
+      <div class="mt-5">
+        <h4>Leave a Review</h4>
+        <form action="/listings/<%= listing._id %>/reviews" method="POST">
+          <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              id="rating"
+              name="review[rating]"
+              class="form-range"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comments</label>
+            <textarea
+              name="review[comment]"
+              id="comment"
+              class="form-control"
+              required
+            ></textarea>
+          </div>
+          <button class="btn btn-success">Submit</button>
+        </form>
+      </div>
+
+      <hr />
+
+      <!-- All Reviews -->
+      <div class="mt-4">
+        <h4>All Reviews</h4>
+        <% if (listing.reviews.length === 0) { %>
+        <p class="text-muted">No reviews yet.</p>
+        <% } %>
+        <ul class="list-group">
+          <% for (let review of listing.reviews) { %>
+          <li class="list-group-item">
+            <strong><%= review.author?.username || "Anonymous" %></strong> rated
+            <strong><%= review.rating %></strong> ⭐
+            <p class="mt-2"><%= review.comment %></p>
+
+            <% if (currentUser && currentUser._id.toString() ===
+            review.author?._id.toString()) { %>
+            <form
+              method="POST"
+              action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+              onsubmit="return confirm('Delete your review?');"
+            >
+              <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+            <% } %>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

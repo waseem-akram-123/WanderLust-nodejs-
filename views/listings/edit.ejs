@@ -1,0 +1,154 @@
+<% layout("layouts/boilerplate") %>
+
+<body>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+              <i class="bi bi-pencil-square me-2"></i>Edit Your Listing
+            </h3>
+          </div>
+          <div class="card-body">
+            <form
+              method="POST"
+              action="/listings/<%= listing._id %>?_method=PUT"
+              enctype="multipart/form-data"
+              class="needs-validation"
+              novalidate
+            >
+              <!-- Title -->
+              <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  name="title"
+                  value="<%= listing.title %>"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Please provide a listing title.
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  name="description"
+                  rows="4"
+                  required
+                >
+<%= listing.description %></textarea
+                >
+                <div class="invalid-feedback">
+                  Please provide a description.
+                </div>
+              </div>
+
+              <!-- ✅ Current Image Preview -->
+              <% if (listing.image && listing.image.url) { %>
+              <div class="mb-3">
+                <label class="form-label">Current Image</label><br />
+                <img
+                  src="<%= listing.image.url %>"
+                  alt="Current Listing Image"
+                  class="img-fluid rounded"
+                  style="max-height: 200px"
+                />
+              </div>
+              <% } %>
+
+              <!-- ✅ Upload New Image -->
+              <div class="mb-3">
+                <label for="image" class="form-label">Upload New Image</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                />
+                <div class="form-text">
+                  Leave empty to keep the existing image.
+                </div>
+              </div>
+
+              <!-- Price -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="price" class="form-label"
+                    >Price per night (₹)</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">₹</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="price"
+                      name="price"
+                      value="<%= listing.price %>"
+                      min="1"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Please provide a valid price.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Country -->
+                <div class="col-md-6 mb-3">
+                  <label for="country" class="form-label">Country</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="country"
+                    name="country"
+                    value="<%= listing.country %>"
+                    required
+                  />
+                  <div class="invalid-feedback">Please provide a country.</div>
+                </div>
+              </div>
+
+              <!-- Location -->
+              <div class="mb-4">
+                <label for="location" class="form-label">Full Address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="location"
+                  name="location"
+                  value="<%= listing.location %>"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Please provide the property location.
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a
+                  href="/listings/<%= listing._id %>"
+                  class="btn btn-outline-secondary me-md-2"
+                >
+                  <i class="bi bi-x-circle me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-check-circle me-2"></i>Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

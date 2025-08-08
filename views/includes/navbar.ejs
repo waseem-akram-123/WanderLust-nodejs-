@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-md bg-white shadow-sm fixed-top border-bottom">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-danger" href="/listings">
+      <i class="fa-solid fa-compass me-1"></i> Wanderlust
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link text-dark px-3" href="/listings">All Listings</a>
+        <a class="nav-link text-dark px-3" href="/listings/new"
+          >Add New Listing</a
+        >
+
+        <% if (!currentUser) { %>
+        <a class="nav-link text-dark px-3" href="/user/signup">Signup</a>
+        <a class="nav-link text-dark px-3" href="/user/login">Login</a>
+        <% } else { %>
+        <form action="/user/logout" method="POST" class="d-inline">
+          <button type="submit" class="nav-link btn btn-link text-dark px-3">
+            Logout
+          </button>
+        </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
