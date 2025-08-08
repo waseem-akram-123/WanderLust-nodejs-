@@ -7,10 +7,8 @@ const ExpressError = require("../utils/ExpressError");
 const { requireLogin, isListingAuthor } = require("../middlewares/auth");
 const { storage, cloudinary } = require("../cloudConfig");
 const multer = require("multer");
-const upload = multer({ storage }); 
-
-// const fs = require("fs");
-// const path = require("path");
+const upload = multer({ storage });
+const axios = require("axios");
 
 // -----------------------------
 // Middleware to validate listing data using Joi schema
@@ -37,7 +35,7 @@ const validateListing = (req, res, next) => {
 };
 
 // -----------------------------
-// Index Route - Show all listings
+// Index Route
 // -----------------------------
 router.get(
   "/",
@@ -61,14 +59,14 @@ router.get(
 );
 
 // -----------------------------
-// New Route - Render form to create new listing
+// New Route
 // -----------------------------
 router.get("/new", requireLogin, (req, res) => {
   res.render("listings/new");
 });
 
 // -----------------------------
-// Create Route - Add new listing to DB
+// Create Route
 // -----------------------------
 router.post(
   "/",
@@ -76,18 +74,62 @@ router.post(
   upload.single("image"),
   validateListing,
   wrapAsync(async (req, res) => {
+    const { location, country } = req.body;
+
+    // Default geometry in case geocoding fails
+    let geometry = {
+      type: "Point",
+      coordinates: [0, 0], // Null Island fallback
+    };
+
+    try {
+      const geoRes = await axios.get(
+        `https://nominatim.openstreetmap.org/search`,
+        {
+          params: {
+            q: `${location}, ${country}`,
+            format: "json",
+            limit: 1,
+          },
+        }
+      );
+
+      if (geoRes.data.length > 0) {
+        geometry = {
+          type: "Point",
+          coordinates: [
+            parseFloat(geoRes.data[0].lon),
+            parseFloat(geoRes.data[0].lat),
+          ],
+        };
+      } else {
+        req.flash(
+          "error",
+          "Could not find coordinates for that location. Using default map position."
+        );
+      }
+    } catch (err) {
+      console.error("Geocoding failed:", err.message);
+      req.flash(
+        "error",
+        "Could not fetch coordinates due to a server issue. Using default map position."
+      );
+    }
+
+    // Create listing with geometry already assigned
     const newListing = new Listing({
       ...req.body,
       author: req.user._id,
+      geometry,
     });
 
+    // Handle image upload
     if (req.file) {
       newListing.image = {
         url: req.file.path,
         filename: req.file.filename,
       };
     } else {
-      // 👇 Add default image if no file is uploaded
       newListing.image = {
         url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
         filename: "default-image",
@@ -101,7 +143,7 @@ router.post(
 );
 
 // -----------------------------
-// Show Route - Show single listing with populated author and reviews
+// Show Route
 // -----------------------------
 router.get(
   "/:id",
@@ -124,7 +166,7 @@ router.get(
 );
 
 // -----------------------------
-// Edit Route - Show form to edit listing
+// Edit Route
 // -----------------------------
 router.get(
   "/:id/edit",
@@ -144,16 +186,18 @@ router.get(
 );
 
 // -----------------------------
-// Update Route - Update listing in DB
+// Update Route
 // -----------------------------
+
 router.put(
   "/:id",
   requireLogin,
   isListingAuthor,
-  upload.single("image"), // 👉 handle optional image upload
+  upload.single("image"),
   validateListing,
   wrapAsync(async (req, res) => {
     const { id } = req.params;
+    const { location, country } = req.body;
     const listing = await Listing.findById(id);
 
     if (!listing) {
@@ -161,27 +205,67 @@ router.put(
       return res.redirect("/listings");
     }
 
-    // Update fields
+    // Default geometry (Null Island fallback)
+    let newGeometry = {
+      type: "Point",
+      coordinates: [0, 0],
+    };
+
+    // Try geocoding new location
+    try {
+      const geoRes = await axios.get(
+        `https://nominatim.openstreetmap.org/search`,
+        {
+          params: {
+            q: `${location}, ${country}`,
+            format: "json",
+            limit: 1,
+          },
+        }
+      );
+
+      if (geoRes.data.length > 0) {
+        newGeometry = {
+          type: "Point",
+          coordinates: [
+            parseFloat(geoRes.data[0].lon),
+            parseFloat(geoRes.data[0].lat),
+          ],
+        };
+      } else {
+        req.flash(
+          "error",
+          "Could not find coordinates for that location. Using default map position."
+        );
+      }
+    } catch (err) {
+      console.error("Geocoding failed:", err.message);
+      req.flash(
+        "error",
+        "Could not fetch coordinates due to a server issue. Using default map position."
+      );
+    }
+
+    // Assign geometry (always something, never null)
+    listing.geometry = newGeometry;
+
+    // Update basic fields
     listing.title = req.body.title;
     listing.description = req.body.description;
     listing.price = req.body.price;
-    listing.location = req.body.location;
-    listing.country = req.body.country;
+    listing.location = location;
+    listing.country = country;
 
-    // If new image uploaded, replace the old one
+    // Image handling
     if (req.file) {
-      // Delete old Cloudinary image if it exists and is not default
       if (listing.image && listing.image.filename !== "default-image") {
         await cloudinary.uploader.destroy(listing.image.filename);
       }
-
-      // Set new uploaded image
       listing.image = {
         url: req.file.path,
         filename: req.file.filename,
       };
     } else if (!listing.image || !listing.image.url) {
-      // No existing image and no new image uploaded → set default image
       listing.image = {
         url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
         filename: "default-image",
@@ -195,7 +279,7 @@ router.put(
 );
 
 // -----------------------------
-// Delete Route - Delete listing + associated image
+// Delete Route
 // -----------------------------
 router.delete(
   "/:id",
@@ -210,7 +294,6 @@ router.delete(
       return res.redirect("/listings");
     }
 
-    // Delete image from Cloudinary if not default image
     if (listing.image && listing.image.filename !== "default-image") {
       await cloudinary.uploader.destroy(listing.image.filename);
     }

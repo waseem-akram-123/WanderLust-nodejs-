@@ -26,7 +26,19 @@ const listingSchema = new Schema({
   country: {
     type: String,
   },
-  // ✅ Link the user who created this listing
+  geometry: {
+    type: {
+      type: String,
+      enum: ["Point"], // GeoJSON type
+      required: true,
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+      default: [0, 0], // placeholder until real coords are added
+    },
+  },
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -39,8 +51,8 @@ const listingSchema = new Schema({
     },
   ],
 });
-// suppose a lsiting is deleted than all the corresponding reviews related to it must get deleted from the databse (im telling database)
 
+// Cascade delete reviews when listing is deleted
 listingSchema.post("findOneAndDelete", async (listing) => {
   if (listing) {
     await Review.deleteMany({ _id: { $in: listing.reviews } });

@@ -15,13 +15,30 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
     />
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet/dist/leaflet.css"
+    />
+    <style>
+      /* Map style */
+      #map {
+        height: 400px;
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 20px;
+      }
+    </style>
   </head>
   <body>
-    <%- include("../includes/navbar") %> <%= include("../includes/flash") %>
+    <%- include("../includes/navbar") %> 
+    <%= include("../includes/flash") %>
 
     <main class="container flex-grow-1" style="flex: 1 0 auto; width: 100%">
       <%- body %>
     </main>
+
     <%- include("../includes/footer") %>
 
     <script
@@ -35,5 +52,8 @@
       crossorigin="anonymous"
     ></script>
     <script src="/js/script.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   </body>
 </html>

@@ -45,6 +45,7 @@
         </form>
       </div>
       <% } %>
+      
 
       <!-- Review Form -->
       <div class="mt-5">
@@ -106,3 +107,21 @@
     </div>
   </div>
 </div>
+
+<div id="map" style="height: 400px;"></div>
+
+<!-- Pass listing data to JS as JSON -->
+<script id="listing-data" type="application/json">
+  <%- JSON.stringify({
+    coordinates: listing.geometry.coordinates || [],
+    title: listing.title,
+    location: listing.location
+  }) %>
+</script>
+
+<!-- Leaflet JS & CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Your custom JS -->
+<script src="/js/script.js"></script>
