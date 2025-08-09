@@ -234,40 +234,69 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    // Read JSON from hidden script tag
     const listingData = JSON.parse(
       document.getElementById("listing-data").textContent
     );
-    if (listingData.coordinates.length === 2) {
-      const map = L.map("map").setView(listingData.coordinates, 13);
+
+    // --- Map Initialization Logic ---
+    // Only initialize the map if valid coordinates exist.
+    // The `|| []` provides a default in case coordinates are null or undefined.
+    // The `.length === 2` ensures we have both latitude and longitude.
+    if (listingData.coordinates && listingData.coordinates.length === 2) {
+      const coordinates = listingData.coordinates;
+
+      // Leaflet requires coordinates in [latitude, longitude] format
+      const lat = coordinates[1];
+      const lng = coordinates[0];
+
+      // Initialize the map on the 'map' div
+      const map = L.map("map").setView([lat, lng], 13);
+
+      // Add the OpenStreetMap tile layer
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
+      // Create a custom marker icon using Bootstrap icons
       const customIcon = L.divIcon({
         html: '<i class="bi bi-geo-alt-fill text-danger fs-4"></i>',
         iconSize: [24, 24],
-        className: "bg-transparent",
+        className: "bg-transparent", // Prevents a white background box
       });
 
-      L.marker(listingData.coordinates, { icon: customIcon })
+      // Add a marker with the custom icon and a popup
+      L.marker([lat, lng], { icon: customIcon })
         .addTo(map)
         .bindPopup(`<b>${listingData.title}</b><br>${listingData.location}`)
         .openPopup();
+    } else {
+      // If coordinates are missing, display a friendly error message
+      const mapContainer = document.getElementById("map");
+      if (mapContainer) {
+        mapContainer.innerHTML =
+          '<div class="d-flex justify-content-center align-items-center h-100 text-muted fs-5">Could not fetch coordinates.</div>';
+        console.warn("Could not fetch coordinates for the map. Map not initialized.");
+      }
     }
 
-    // Rating Slider JS
+    // --- Rating Slider Logic ---
     const ratingRange = document.getElementById("ratingRange");
     const ratingText = document.getElementById("ratingText");
 
-    function updateRatingText(value) {
-      ratingText.textContent = value + (value === "1" ? " star" : " stars");
+    if (ratingRange && ratingText) {
+      function updateRatingText(value) {
+        ratingText.textContent = value + (value === "1" ? " star" : " stars");
+      }
+
+      // Initialize the rating text on page load
+      updateRatingText(ratingRange.value);
+
+      // Update the rating text dynamically when the slider value changes
+      ratingRange.addEventListener("input", (e) => {
+        updateRatingText(e.target.value);
+      });
     }
-
-    updateRatingText(ratingRange.value);
-
-    ratingRange.addEventListener("input", (e) => {
-      updateRatingText(e.target.value);
-    });
   });
 </script>
