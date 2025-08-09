@@ -7,7 +7,6 @@ const User = require("../models/User");
 const { createTokenUser } = require("../service/auth");
 const { requireLogin } = require("../middlewares/auth");
 const wrapAsync = require("../utils/wrapAsync");
-// const ExpressError = require("../utils/ExpressError");
 
 // Render Signup Form
 router.get("/signup", (req, res) => {
