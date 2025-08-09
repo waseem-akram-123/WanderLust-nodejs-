@@ -1,42 +1,70 @@
 /* Layout: full width and sticky footer */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-body {
-  padding-top: 4.5rem; /* Match navbar height for fixed-top */
-}
-
+/* Update your body style */
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f7f7f7;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
+  /* Reset to the correct padding for the collapsed navbar */
+  padding-top: 4.5rem;
 }
 
-.container {
-  width: 100% !important;
-  max-width: 100% !important;
+/* Add this new rule */
+/* This will only apply on mobile/small screens (under 992px) */
+@media (max-width: 991.98px) {
+  .navbar-expand-lg.navbar.fixed-top + main {
+    padding-top: 1rem; /* A safe, large value to prevent overlapping */
+  }
 }
 
+/* Rest of your CSS remains the same */
+
+/* Add a margin-bottom to the main content area */
 main {
   flex: 1 0 auto;
+  margin-bottom: 2rem; /* Add some space between content and footer */
 }
 
 footer.airbnb-footer {
   flex-shrink: 0;
 }
 
-/* Navbar adjustments */
-.navbar {
-  height: 4.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  background-color: #fff;
-  border-bottom: 1px solid #e5e5e5;
+/* Default for desktop - keep transparent background */
+.navbar-collapse {
+  background-color: transparent;
+  border-bottom: none;
+  padding: 0;
+}
+
+/* On mobile (under 992px), add white bg and border */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 10px 0;
+  }
+
+  .navbar-collapse .nav-link {
+    color: #212529;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .navbar-collapse .nav-link:hover,
+  .navbar-collapse .nav-link:focus {
+    background-color: #f8f9fa;
+    color: #ff385c;
+    border-radius: 4px;
+  }
 }
 
 .navbar-brand {
@@ -49,13 +77,18 @@ footer.airbnb-footer {
 .navbar-nav .nav-link {
   font-weight: 500;
   transition: color 0.3s ease;
+  color: #212529; /* Bootstrap's text-dark color - FIXED */
+  padding-left: 1rem; /* NEW */
+  padding-right: 1rem; /* NEW */
 }
 
-.navbar-nav .nav-link:hover {
+/* NEW: On hover and focus, highlight nav links */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
   color: #ff385c;
+  background-color: #f8f9fa;
+  border-radius: 4px;
 }
-
-
 
 /* footer */
 .shadow-sm {
@@ -98,9 +131,6 @@ footer.airbnb-footer {
   pointer-events: none;
   cursor: default;
 }
-
-
-
 
 /* all Listing Cards  -> index.js */
 .listing-card {
@@ -177,4 +207,50 @@ footer.airbnb-footer {
   border: 1px solid #e2e2e2; /* light border to visually separate */
   border-radius: 16px;
   background-color: #fdfdfd;
+}
+
+/* Add to your existing style.css */
+/* Remove all .background-image-container and .overlay CSS */
+.card {
+  background: #fff; /* Solid white background for a clean look */
+  border: 1px solid #dee2e6; /* subtle border to frame the card */
+}
+
+/* Ensure the layout is correct */
+body {
+  /* Set a light background color for the body */
+  background-color: #f8f9fa;
+  /* Restore the padding-top for the fixed navbar */
+  padding-top: 4.5rem;
+}
+
+
+/* ======================= */
+/* NAVBAR PUSH-DOWN FIX FOR MOBILE */
+/* ======================= */
+
+/* Make navbar sticky and add bg+shadow */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background-color: #fff; /* keep white bg when sticky */
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+}
+
+/* Override collapse on mobile to push content down */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    position: relative !important; /* override absolute/fixed */
+    display: block !important;     /* take up space in document */
+    width: 100% !important;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  /* When navbar is expanded, max-height large enough to show links */
+  .navbar-collapse.show {
+    max-height: 500px; /* adjust if you have more links */
+  }
 }

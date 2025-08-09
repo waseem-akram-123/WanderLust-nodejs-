@@ -40,8 +40,18 @@ const validateListing = (req, res, next) => {
 router.get(
   "/",
   wrapAsync(async (req, res) => {
-    const allListings = await Listing.find({}).populate("reviews");
+    const searchQuery = req.query.search || "";
 
+    // Fetch all listings with populated reviews
+    let allListings = await Listing.find({}).populate("reviews");
+
+    // If there is a search query, filter listings by title (case-insensitive substring match)
+    if (searchQuery) {
+      const regex = new RegExp(searchQuery, "i");
+      allListings = allListings.filter((listing) => regex.test(listing.title));
+    }
+
+    // Calculate average rating for each listing
     const listingsWithAvgRatings = allListings.map((listing) => {
       let avgRating = 0;
       if (listing.reviews.length > 0) {
@@ -54,9 +64,10 @@ router.get(
       };
     });
 
-    res.render("listings/index", { allListings: listingsWithAvgRatings });
+    res.render("listings/index", { allListings: listingsWithAvgRatings, searchQuery });
   })
 );
+
 
 // -----------------------------
 // New Route

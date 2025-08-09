@@ -39,3 +39,5 @@ L.marker([lat, lng])
   .addTo(map)
   .bindPopup(`<b>${listingData.title}</b><br>${listingData.location}`)
   .openPopup();
+
+
