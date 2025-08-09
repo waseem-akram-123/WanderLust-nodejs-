@@ -55,10 +55,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// // Root
-// app.get("/", (req, res) => {
-//   res.send("hi am root");
-// });
 
 app.use((req, res, next) => {
   const successMessages = req.flash("success");
@@ -70,6 +66,12 @@ app.use((req, res, next) => {
 
   next();
 });
+
+// ✅ Add the root redirect here
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
+
 
 app.use("/user", userRouter);
 app.use("/listings", listingRouter);
