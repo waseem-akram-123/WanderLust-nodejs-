@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const User = require("../models/User");
+const User = require("../models/user");
 const { createTokenUser } = require("../service/auth");
 const { requireLogin } = require("../middlewares/auth");
 const wrapAsync = require("../utils/wrapAsync");
