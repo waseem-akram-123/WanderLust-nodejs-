@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const PORT = 3000;
-const { connectToMongoDb } = require("./connection");
+// const { connectToMongoDb } = require("./connection");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -11,15 +11,24 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const cookieParser = require("cookie-parser");
 const { isLoggedIn } = require("./middlewares/auth");
+const mongoose = require("mongoose");
 
 const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
 
-connectToMongoDb(process.env.MONGODB_URL)
-  .then(() => console.log("MongoDB is connected"))
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => {
+    console.log("MongoDB is connected");
+    // Start your server here after a successful database connection
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
   .catch((err) => {
-    console.log("Error in Mongoose connection:", err);
+    console.error("Error in Mongoose connection:", err);
   });
 
 app.set("view engine", "ejs");
@@ -55,7 +64,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 app.use((req, res, next) => {
   const successMessages = req.flash("success");
   const errorMessages = req.flash("error");
@@ -71,7 +79,6 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
-
 
 app.use("/user", userRouter);
 app.use("/listings", listingRouter);
